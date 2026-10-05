@@ -1,0 +1,110 @@
+{
+  "network_attempts": [],
+  "results": [
+    {
+      "item": "credentials",
+      "finding": "Twilio credentials ABSENT -> no real call/SMS is reachable in this build",
+      "evidence": "provider auto resolved to call=simulation sms=simulation"
+    },
+    {
+      "item": "auto-fallback",
+      "finding": "SILENT DEMO FALLBACK CONFIRMED",
+      "evidence": "provider=auto with no credentials returned 'simulation' / 'simulation' (config.yaml default emergency.provider = 'auto')"
+    },
+    {
+      "item": "false-success",
+      "finding": "REPORTS SUCCESS WITHOUT A PROVIDER",
+      "evidence": "with zero credentials the engine reported call=COMPLETED sms=SENT call_placed=True"
+    },
+    {
+      "item": "explicit-twilio",
+      "finding": "explicit mode FAILS LOUDLY",
+      "evidence": "TwilioProvider.available() -> False, reason='missing Twilio credential(s) in .env: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER'"
+    },
+    {
+      "item": "explicit-twilio-sms",
+      "finding": "fails loudly",
+      "evidence": "available() -> False, 'missing Twilio credential(s) in .env: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER'"
+    },
+    {
+      "item": "fallback-policy",
+      "finding": "NO EXPLICIT POLICY FLAG",
+      "evidence": "emergency config fields = ['async_calls', 'call_log', 'contact_env_var', 'demo_mode', 'emergency_instruction', 'enabled', 'expose_recipient', 'max_calls_per_run', 'min_gap_seconds', 'poll_attempts', 'poll_interval_seconds', 'provider', 'request_timeout_seconds', 'send_sms', 'simulated_duration_seconds', 'simulated_ring_after_seconds', 'sms_body', 'sms_max_body_length', 'sms_provider', 'twilio_from_env_var', 'twilio_phone_env_var', 'twilio_sid_env_var', 'twilio_token_env_var', 'voice_message', 'write_call_log']"
+    },
+    {
+      "item": "fallback-behaviour",
+      "finding": "hard-coded: SMS is SKIPPED when the call fails (no fallback)",
+      "evidence": "dispatcher._send_sms gate uses CallStatus.reached_recipient; reason looks like 'call was FAILED: <error>'"
+    },
+    {
+      "item": "missing-or-present: durable outbox (on-disk/sqlite)",
+      "finding": "MISSING",
+      "evidence": "grep over ai_engine/emergency/*.py"
+    },
+    {
+      "item": "missing-or-present: idempotency key sent to provider",
+      "finding": "MISSING",
+      "evidence": "grep over ai_engine/emergency/*.py"
+    },
+    {
+      "item": "missing-or-present: retry / backoff",
+      "finding": "MISSING",
+      "evidence": "grep over ai_engine/emergency/*.py"
+    },
+    {
+      "item": "missing-or-present: webhook / status callback receiver",
+      "finding": "MISSING",
+      "evidence": "grep over ai_engine/emergency/*.py"
+    },
+    {
+      "item": "missing-or-present: circuit breaker / kill switch",
+      "finding": "MISSING",
+      "evidence": "grep over ai_engine/emergency/*.py"
+    },
+    {
+      "item": "missing-or-present: recipient allowlist / consent",
+      "finding": "MISSING",
+      "evidence": "grep over ai_engine/emergency/*.py"
+    },
+    {
+      "item": "reported-timing",
+      "finding": "505 frames in 70.8 s is OFFLINE FILE THROUGHPUT, not live response",
+      "evidence": "clip is 16.8s of footage; the run took 70.8s wall clock, i.e. ~7.1 FPS analysed vs 30.0 FPS native -> 4.21x slower than real time, sequential decode"
+    },
+    {
+      "item": "no-stage-timings",
+      "finding": "no per-stage latency instrumentation (capture/decode/detect/verify/notify)",
+      "evidence": "Pipeline PerfStats carries inference_ms/tracking_ms/analysis_ms/total_ms only; there is no capture->incident or incident->notification stage timing"
+    },
+    {
+      "item": "hardware",
+      "finding": "recorded for the record",
+      "evidence": "CPU = Intel64 Family 6 Model 190 Stepping 0, GenuineIntel"
+    },
+    {
+      "item": "coverage",
+      "finding": "all scripted/synthetic; NO labeled real-world evaluation set exists",
+      "evidence": "17 modules; the 9 regression scenarios use synthetic detections; scripts/calibrate.py expects labelled folders that are not present"
+    },
+    {
+      "item": "accuracy-claim",
+      "finding": "NO accuracy / false-alarm-rate figure can be claimed",
+      "evidence": "one real clip, 1 incident, 505 frames, single camera, single event - insufficient for any rate"
+    },
+    {
+      "item": "env-example",
+      "finding": "placeholders only",
+      "evidence": "phone-like tokens in .env.example: []"
+    },
+    {
+      "item": "encryption",
+      "finding": "NO encryption at rest",
+      "evidence": "incidents.json / demo_calls.jsonl / evidence/ are written as plain files"
+    },
+    {
+      "item": "auth-n/a",
+      "finding": "no auth on any endpoint",
+      "evidence": "the engine exposes no HTTP server; a webhook receiver does not exist yet"
+    }
+  ]
+}

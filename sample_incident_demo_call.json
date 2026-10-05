@@ -1,0 +1,306 @@
+{
+  "schema_version": "1.3.0",
+  "generated_by": "safevision.ai_engine",
+  "incident_id": "INC-20261002-0127",
+  "status": "CONFIRMED_ACCIDENT",
+  "timestamp": "2026-10-02T14:00:43.409646+00:00",
+  "detected_at_unix": 1790949643.41,
+  "camera": {
+    "camera_id": "CAM-001",
+    "name": "Main Road Camera",
+    "source": "CAM-001",
+    "type": "cctv",
+    "location_source": "camera_registered_metadata"
+  },
+  "location": {
+    "name": "Chennai Main Road",
+    "latitude": 13.0827,
+    "longitude": 80.2707,
+    "road": "Anna Salai",
+    "address": "112, Anna Salai, Chennai, Tamil Nadu",
+    "zone": "TN-01",
+    "is_camera_registered": true,
+    "source": "camera_metadata"
+  },
+  "accident": {
+    "score": 0.4167,
+    "confidence_percent": 42,
+    "severity": "MEDIUM",
+    "severity_score": 0.3441,
+    "severity_reasons": [
+      "2 vehicles involved",
+      "Abrupt deceleration of the involved vehicles",
+      "Traffic appears blocked by stopped vehicles",
+      "AI-estimated scene severity: MEDIUM"
+    ],
+    "confirmed": true,
+    "confirmation": "multi-frame evidence (temporal fusion + independent signals)",
+    "frames_of_evidence": 60,
+    "verification_seconds": 1.0
+  },
+  "evidence": {
+    "collision_score": 0.65,
+    "motion_score": 0.0006,
+    "trajectory_score": 0.0104,
+    "temporal_score": 0.4813,
+    "object_evidence_score": 0.45,
+    "scene_evidence_score": 0.3783,
+    "agreement_signals": 3,
+    "weights": {
+      "collision": 0.34,
+      "motion": 0.16,
+      "trajectory": 0.08,
+      "temporal": 0.3,
+      "object_evidence": 0.07,
+      "scene_evidence": 0.05
+    },
+    "signals": {
+      "collision": {
+        "track_a": 1,
+        "track_b": 2,
+        "class_a": "car",
+        "class_b": "car",
+        "score": 0.65,
+        "agreement_signals": 3,
+        "point": [
+          310.0,
+          162.0
+        ],
+        "reasons": [
+          "Collision proximity detected",
+          "Bounding-box overlap between objects",
+          "Sudden velocity change in both objects",
+          "Post-collision stopping"
+        ],
+        "signals": {
+          "signals_active": [
+            "proximity",
+            "overlap",
+            "deceleration"
+          ],
+          "agreement": 3,
+          "proximity": 1.0,
+          "overlap_iou": 0.6923,
+          "center_inside": true,
+          "closing_speed": 0.0,
+          "deceleration_a": 0.99213,
+          "deceleration_b": 0.99213,
+          "pair_deceleration": 1.0,
+          "post_stop": 0.0,
+          "displacement_spike": 0.0,
+          "convergence": 0.0,
+          "time_to_impact_seconds": null,
+          "relative_speed": 0.0,
+          "person_involved": false
+        }
+      },
+      "trajectory_pairs": [],
+      "scene": {
+        "disruption": 0.0,
+        "blocked_ratio": 1.0,
+        "blocked_seconds": 1.067,
+        "tracking_instability": 0.0,
+        "abnormal_duration": 0.189,
+        "disrupted_track_ids": []
+      },
+      "temporal": {
+        "temporal_score": 0.4813,
+        "consistency": 0.0,
+        "persistence": 1.0,
+        "accumulator": 0.2913,
+        "window_frames": 60,
+        "window_fill": 0.6667,
+        "frames_above_threshold": 21,
+        "consecutive_above_threshold": 19,
+        "isolated_event": false,
+        "peak_composite": 0.5397,
+        "mean_composite": 0.1619,
+        "reasons": [
+          "Persistent abnormal motion across frames"
+        ]
+      },
+      "penalties": {}
+    },
+    "reasons": [
+      "Collision proximity detected",
+      "Bounding-box overlap between objects",
+      "Sudden velocity change in both objects",
+      "Post-collision stopping"
+    ],
+    "negative_evidence": [],
+    "involved_tracks": [
+      {
+        "track_id": 1,
+        "class": "car",
+        "speed_norm": 0.0,
+        "bbox": [
+          296.5,
+          150.0,
+          326.5,
+          172.0
+        ],
+        "history_points": 46
+      },
+      {
+        "track_id": 2,
+        "class": "car",
+        "speed_norm": 0.0,
+        "bbox": [
+          293.5,
+          152.0,
+          323.5,
+          174.0
+        ],
+        "history_points": 46
+      }
+    ]
+  },
+  "objects": {
+    "vehicles_involved": 2,
+    "persons_detected": 0,
+    "total_objects": 2,
+    "object_counts": {
+      "car": 2
+    },
+    "involved_track_ids": [
+      1,
+      2
+    ],
+    "classes": [
+      "car"
+    ]
+  },
+  "media": {
+    "evidence_dir": "evidence\\INC-20261002-0127",
+    "annotated_frame": "evidence\\INC-20261002-0127\\annotated.jpg",
+    "evidence_frames": [
+      "evidence\\INC-20261002-0127\\before.jpg",
+      "evidence\\INC-20261002-0127\\before_mid.jpg",
+      "evidence\\INC-20261002-0127\\collision.jpg",
+      "evidence\\INC-20261002-0127\\after.jpg"
+    ],
+    "clip": null,
+    "files": {
+      "before": "3ad386cef883ed9c6f4c465b021c0cb25e4da3392e0d6e62ff39ed8578a64b66",
+      "before_mid": "3ad386cef883ed9c6f4c465b021c0cb25e4da3392e0d6e62ff39ed8578a64b66",
+      "collision": "3ad386cef883ed9c6f4c465b021c0cb25e4da3392e0d6e62ff39ed8578a64b66",
+      "after": "3ad386cef883ed9c6f4c465b021c0cb25e4da3392e0d6e62ff39ed8578a64b66",
+      "annotated": "3b7e7aa4d427f1a3f80918d8a3731b662e7efc6793878c798f034785df508f8e"
+    }
+  },
+  "performance": {
+    "fps": 425.17,
+    "source_fps": 0.0,
+    "inference_ms": 0.033,
+    "tracking_ms": 0.354,
+    "analysis_ms": 0.678,
+    "total_ms": 1.424,
+    "frames_processed": 60,
+    "detector": "scripted",
+    "device": "cpu"
+  },
+  "demo_emergency_call": {
+    "attempted": true,
+    "status": "COMPLETED",
+    "label": "DEMO EMERGENCY CALL",
+    "call_id": "CALL-20261002-140043-001",
+    "incident_id": "INC-20261002-0127",
+    "provider": "simulation",
+    "trigger": "automatic_on_confirmation",
+    "recipient": "+15****0306",
+    "recipient_full": null,
+    "reason": null,
+    "provider_status": "completed",
+    "provider_call_sid": "SIM1930439168",
+    "error": null,
+    "call_placed": true,
+    "started_at": "2026-10-02T14:00:43.431197+00:00",
+    "duration_seconds": 6.01,
+    "demo_mode": true,
+    "disclaimer": "Demonstration call to the authorised SafeVision demo recipient. It is not connected to any ambulance, police or 112 line and no emergency service is notified."
+  },
+  "demo_emergency_sms": {
+    "attempted": true,
+    "status": "SENT",
+    "label": "DEMO SMS",
+    "call_id": null,
+    "incident_id": null,
+    "provider": "simulation",
+    "trigger": "automatic_after_call",
+    "recipient": "+15****0306",
+    "recipient_full": null,
+    "body": "\ud83d\udea8 ACCIDENT ALERT\nIncident: INC-20261002-0127\nDate: 02-10-2026\nTime: 14:00:43\nLocation: Chennai Main Road (13.082700, 80.270700)\nCamera: CAM-001\nSeverity: MEDIUM (AI-estimated scene severity, confidence 42%)\n\nA traffic accident has been confirmed by SafeVision from multi-frame video evidence. Emergency assistance may be required.\n\nLocation source: CAMERA-REGISTERED (not a GPS fix)\nThis is an AI estimate, not a verified injury assessment. Please confirm before acting.",
+    "reason": null,
+    "provider_status": "queued",
+    "provider_message_sid": "SMSIM1930490470",
+    "error": null,
+    "sent_at": "2026-10-02T14:00:49.437683+00:00",
+    "sent": true,
+    "demo_mode": true,
+    "disclaimer": "Demonstration SMS to the authorised SafeVision demo recipient. It is not connected to any ambulance, police or 112 line and no emergency service is notified."
+  },
+  "warnings": [],
+  "disclaimer": "SafeVision output is an AI-estimated accident probability computed from multi-frame video evidence. It is not a verified human-injury assessment and the location is the camera's registered location, not a GPS fix. A human operator should confirm before any emergency action is taken.",
+  "report": {
+    "incident_id": "INC-20261002-0127",
+    "schema_version": "1.3.0",
+    "status": "CONFIRMED_ACCIDENT",
+    "timestamp": "2026-10-02T14:00:43.409646+00:00",
+    "what_happened": "Collision detected between 2 tracked vehicles. Confirmed after 60 frame(s) of evidence over 1.0s.",
+    "why": [
+      "Collision proximity detected",
+      "Bounding-box overlap between objects",
+      "Sudden velocity change in both objects",
+      "Post-collision stopping",
+      "Collision proximity / closing speed: 0.65",
+      "Sudden motion change: 0.00",
+      "Trajectory deviation: 0.01",
+      "Temporal consistency: 0.48",
+      "Agreeing independent signals: 3"
+    ],
+    "confidence": {
+      "score": 0.4167,
+      "percent": 42,
+      "wording": "AI-estimated accident probability from multi-frame evidence"
+    },
+    "severity": {
+      "level": "MEDIUM",
+      "score": 0.3441,
+      "wording": "AI-estimated scene severity (not a medical assessment)",
+      "reasons": [
+        "2 vehicles involved",
+        "Abrupt deceleration of the involved vehicles",
+        "Traffic appears blocked by stopped vehicles",
+        "AI-estimated scene severity: MEDIUM"
+      ]
+    },
+    "location": {
+      "name": "Chennai Main Road",
+      "latitude": 13.0827,
+      "longitude": 80.2707,
+      "road": "Anna Salai",
+      "address": "112, Anna Salai, Chennai, Tamil Nadu",
+      "is_camera_registered": true,
+      "wording": "Camera-registered location (from camera metadata, not a live GPS fix)"
+    },
+    "evidence_files": {
+      "annotated_frame": "evidence\\INC-20261002-0127\\annotated.jpg",
+      "frames": [
+        "evidence\\INC-20261002-0127\\before.jpg",
+        "evidence\\INC-20261002-0127\\before_mid.jpg",
+        "evidence\\INC-20261002-0127\\collision.jpg",
+        "evidence\\INC-20261002-0127\\after.jpg"
+      ],
+      "clip": null,
+      "directory": "evidence\\INC-20261002-0127",
+      "count": 5
+    },
+    "counter_evidence": [],
+    "disclaimer": "SafeVision output is an AI-estimated accident probability computed from multi-frame video evidence. It is not a verified human-injury assessment and the location is the camera's registered location, not a GPS fix. A human operator should confirm before any emergency action is taken.",
+    "warnings": [],
+    "markdown": "# SafeVision incident INC-20261002-0127\n\n- **Status:** `CONFIRMED_ACCIDENT`\n- **Timestamp:** `2026-10-02T14:00:43.409646+00:00`\n- **Schema version:** `1.3.0`\n\n## What happened\nCollision detected between 2 tracked vehicles. Confirmed after 60 frame(s) of evidence over 1.0s.\n\n## Why it was detected\n- Collision proximity detected\n- Bounding-box overlap between objects\n- Sudden velocity change in both objects\n- Post-collision stopping\n- Collision proximity / closing speed: 0.65\n- Sudden motion change: 0.00\n- Trajectory deviation: 0.01\n- Temporal consistency: 0.48\n- Agreeing independent signals: 3\n\n## Confidence and severity\n- **AI-estimated accident probability:** 42% (AI-estimated accident probability from multi-frame evidence)\n- **AI-estimated scene severity:** MEDIUM (score 0.34)\n  - 2 vehicles involved\n  - Abrupt deceleration of the involved vehicles\n  - Traffic appears blocked by stopped vehicles\n  - AI-estimated scene severity: MEDIUM\n\n## Location\n- Camera-registered location (from camera metadata, not a live GPS fix)\n- Name: Chennai Main Road\n- Road: Anna Salai\n- Coordinates: 13.0827, 80.2707 (camera metadata)\n\n## Evidence\n- Directory: `evidence\\INC-20261002-0127`\n- Annotated frame: `evidence\\INC-20261002-0127\\annotated.jpg`\n- Frame: `evidence\\INC-20261002-0127\\before.jpg`\n- Frame: `evidence\\INC-20261002-0127\\before_mid.jpg`\n- Frame: `evidence\\INC-20261002-0127\\collision.jpg`\n- Frame: `evidence\\INC-20261002-0127\\after.jpg`\n\n---\n_SafeVision output is an AI-estimated accident probability computed from multi-frame video evidence. It is not a verified human-injury assessment and the location is the camera's registered location, not a GPS fix. A human operator should confirm before any emergency action is taken._"
+  },
+  "extra": {
+    "media_time_seconds": 1790949646.079
+  }
+}

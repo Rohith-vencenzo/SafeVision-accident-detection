@@ -1,0 +1,283 @@
+{
+  "generated_at": "2026-10-02T15:25:09.586892+00:00",
+  "manifest": {
+    "name": "safevision-shipped-assets",
+    "version": "0.1.0",
+    "clips": 4,
+    "real_clips": 1,
+    "synthetic_clips": 3,
+    "verified_clips": 0,
+    "positive_clips": 1,
+    "negative_clips": 3,
+    "positive_events": 1,
+    "source_groups": 4,
+    "cameras": [
+      "UNKNOWN-UNVERIFIED"
+    ],
+    "usable_for_quality_claims": false,
+    "quality_blockers": [
+      "3 clip(s) are synthetic and cannot measure detector quality",
+      "4 clip(s) are not independently verified (grades: ['PROVISIONAL', 'SYNTHETIC'])",
+      "only 1 real clip(s); at least ~20 clips from >=5 distinct cameras/locations are needed before any rate is meaningful",
+      "only 4 independent source group(s); leakage-safe splits need >=5"
+    ]
+  },
+  "splits": {
+    "train": {
+      "name": "train",
+      "clips": 4,
+      "positive_clips": 1,
+      "negative_clips": 3,
+      "groups": 4,
+      "group_ids": [
+        "SRC-A-2026-09",
+        "SRC-SYNTH-A",
+        "SRC-SYNTH-B",
+        "SRC-SYNTH-C"
+      ]
+    },
+    "validation": {
+      "name": "validation",
+      "clips": 0,
+      "positive_clips": 0,
+      "negative_clips": 0,
+      "groups": 0,
+      "group_ids": []
+    },
+    "test": {
+      "name": "test",
+      "clips": 0,
+      "positive_clips": 0,
+      "negative_clips": 0,
+      "groups": 0,
+      "group_ids": []
+    }
+  },
+  "leakage_check": "PASS - no source_id appears in more than one partition",
+  "provenance": {
+    "model_weights": "models/yolo11n.pt",
+    "model_weights_sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+    "imgsz": 640,
+    "device": "auto",
+    "thresholds": {
+      "threshold_set": "a92d1b6f1d68dd22",
+      "confirm_score": "0.42",
+      "temporal_confirm_score": "0.4",
+      "verify_entry_score": "0.34",
+      "suspicious_score": "0.3"
+    },
+    "data_fingerprint": "44f2a62d8f31624f",
+    "manifest_version": "0.1.0",
+    "split_seed": 20261002,
+    "split_ratios": [
+      0.6,
+      0.2,
+      0.2
+    ],
+    "positive_events": 1
+  },
+  "class_imbalance": {
+    "positives": 1,
+    "negatives": 3,
+    "total": 4,
+    "negative_to_positive_ratio": 3.0,
+    "majority_class_pct": 75.0
+  },
+  "event_metrics": {
+    "train": {
+      "confusion_matrix": {
+        "TP": 1,
+        "FP": 0,
+        "FN": 0,
+        "TN": 3
+      },
+      "positives_evaluated": 1,
+      "negatives_evaluated": 3,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 0.0,
+      "precision_ci95": {
+        "point": 1.0,
+        "ci95_low": 0.2065,
+        "ci95_high": 1.0,
+        "n": 1
+      },
+      "recall_ci95": {
+        "point": 1.0,
+        "ci95_low": 0.2065,
+        "ci95_high": 1.0,
+        "n": 1
+      },
+      "false_positive_rate_ci95": {
+        "point": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.5615,
+        "n": 3
+      },
+      "false_negative_rate_ci95": {
+        "point": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.7935,
+        "n": 1
+      },
+      "notes": []
+    }
+  },
+  "score_curve": {
+    "train": [
+      {
+        "threshold": 1.0,
+        "TP": 0,
+        "FP": 0,
+        "FN": 1,
+        "TN": 3,
+        "precision": null,
+        "recall": 0.0,
+        "f1": null,
+        "false_positive_rate": 0.0
+      },
+      {
+        "threshold": 0.708,
+        "TP": 1,
+        "FP": 0,
+        "FN": 0,
+        "TN": 3,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "false_positive_rate": 0.0
+      },
+      {
+        "threshold": 0.0,
+        "TP": 1,
+        "FP": 3,
+        "FN": 0,
+        "TN": 0,
+        "precision": 0.25,
+        "recall": 1.0,
+        "f1": 0.4,
+        "false_positive_rate": 1.0
+      }
+    ]
+  },
+  "pr_auc": {
+    "train": 1.0
+  },
+  "threshold_suggestion": {
+    "threshold": null,
+    "reason": "the validation split is empty or has no positive example, so no threshold can be selected without tuning on data the detector was fitted to. This is reported as 'no suggestion', not guessed.",
+    "source": "validation split only",
+    "applied_automatically": false
+  },
+  "split_sufficiency": {
+    "parts": {
+      "train": {
+        "name": "train",
+        "clips": 4,
+        "positive_clips": 1,
+        "negative_clips": 3,
+        "groups": 4,
+        "group_ids": [
+          "SRC-A-2026-09",
+          "SRC-SYNTH-A",
+          "SRC-SYNTH-B",
+          "SRC-SYNTH-C"
+        ]
+      },
+      "validation": {
+        "name": "validation",
+        "clips": 0,
+        "positive_clips": 0,
+        "negative_clips": 0,
+        "groups": 0,
+        "group_ids": []
+      },
+      "test": {
+        "name": "test",
+        "clips": 0,
+        "positive_clips": 0,
+        "negative_clips": 0,
+        "groups": 0,
+        "group_ids": []
+      }
+    },
+    "sufficient_for_quality_claim": false,
+    "reasons": [
+      "partition(s) with <5 clips: ['train', 'validation', 'test']",
+      "test partition has 0 clip(s); >=20 needed for a stable rate",
+      "test partition has 0 positive clip(s); >=5 needed"
+    ]
+  },
+  "claims_allowed": [
+    "reporting the pipeline runs end to end and is reproducible"
+  ],
+  "claims_withheld": [
+    "accuracy / false-alarm rate claims",
+    "any statement about detector accuracy on real-world footage",
+    "any claim that the thresholds are optimal",
+    "any calibrated-probability interpretation of 'accident_score'"
+  ],
+  "per_clip": [
+    {
+      "clip": "accident_demo.mp4",
+      "source_id": "SRC-A-2026-09",
+      "label": "accident",
+      "quality": "PROVISIONAL",
+      "peak_score": 0.708,
+      "peak_physical": 0.7305,
+      "peak_temporal": 0.6979,
+      "incident_count": 1,
+      "incident_times": [
+        2.87
+      ],
+      "frames": 505,
+      "seconds": 16.83,
+      "error": ""
+    },
+    {
+      "clip": "accident.mp4",
+      "source_id": "SRC-SYNTH-A",
+      "label": "normal",
+      "quality": "SYNTHETIC",
+      "peak_score": 0.0,
+      "peak_physical": 0.0,
+      "peak_temporal": 0.0,
+      "incident_count": 0,
+      "incident_times": [],
+      "frames": 90,
+      "seconds": 6.0,
+      "error": ""
+    },
+    {
+      "clip": "normal_traffic.mp4",
+      "source_id": "SRC-SYNTH-B",
+      "label": "normal",
+      "quality": "SYNTHETIC",
+      "peak_score": 0.0,
+      "peak_physical": 0.0,
+      "peak_temporal": 0.0,
+      "incident_count": 0,
+      "incident_times": [],
+      "frames": 90,
+      "seconds": 6.0,
+      "error": ""
+    },
+    {
+      "clip": "suspicious.mp4",
+      "source_id": "SRC-SYNTH-C",
+      "label": "normal",
+      "quality": "SYNTHETIC",
+      "peak_score": 0.0,
+      "peak_physical": 0.0,
+      "peak_temporal": 0.0,
+      "incident_count": 0,
+      "incident_times": [],
+      "frames": 90,
+      "seconds": 6.0,
+      "error": ""
+    }
+  ],
+  "note": "Raw detector scores are NOT calibrated probabilities unless a calibration report says so. 'score' is an uncalibrated evidence index."
+}

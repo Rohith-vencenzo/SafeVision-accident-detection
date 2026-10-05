@@ -1,0 +1,68 @@
+# ---------------------------------------------------------------------------
+# SafeVision - what must never be committed
+# ---------------------------------------------------------------------------
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Model weights (large binaries - fetch with scripts/download_model.py)
+models/*.pt
+models/*.onnx
+models/*.engine
+
+# Generated artefacts
+evidence/
+!evidence/.gitkeep
+test_videos/*
+!test_videos/.gitkeep
+output_debug*.mp4
+incidents.json
+demo_report.json
+calibration_report.json
+validation_report.json
+*.log
+
+# Demonstration emergency-call audit trail. It records the recipient, so it is
+# a local-only artefact like the rest of the run output.
+demo_calls.jsonl
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Secrets - RTSP credentials and the DEMO EMERGENCY CONTACT NUMBER belong in
+# environment variables. `.env` holds EMERGENCY_CONTACT_NUMBER plus the
+# optional telephony credentials; it must never be committed.
+#
+# The patterns below deliberately cover every variant (`.env.txt`, `.env.bak`,
+# `prod.env`, ...) so a stray copy can never slip into a commit.  Only the
+# committed template stays visible.
+.env
+.env.*
+*.env
+*.env.*
+.envrc
+!.env.example
+!*.env.example
+
+# Phase 4 notification outbox: runtime delivery state, never source.
+# It holds masked recipients and provider references - per-incident audit data.
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.db
+notification_outbox.sqlite3
+
+# ---------------------------------------------------------------------------
+# The following ARE committed: config.yaml, cameras.yaml, .env.example,
+# README.md, docs/, ai_engine/, tests/, scripts/, examples/, main.py,
+# requirements.txt
+# ---------------------------------------------------------------------------

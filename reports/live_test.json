@@ -1,0 +1,12 @@
+{
+  "channel": "sms",
+  "provider_accepted": false,
+  "provider_message_sid": null,
+  "terminal_status": null,
+  "human_confirmed_received": null,
+  "using_template": false,
+  "error": "HTTP 400: Invalid template name. Trial accounts can only use predefined SMS templates.",
+  "twilio_code": 572006,
+  "twilio_message": "Invalid template name. Trial accounts can only use predefined SMS templates.",
+  "note": "Provider acceptance and a terminal provider state are evidence that the PROVIDER acted. They are not proof that a person was reached: 'completed' can mean an IVR or voicemail. human_confirmed_received is the operator's own out-of-band answer and is the only field that speaks to a person."
+}

@@ -1,0 +1,478 @@
+# =============================================================================
+# SafeVision - AI / Computer-Vision accident detection engine
+# =============================================================================
+# Every threshold the pipeline uses lives here.  Nothing is hard-coded in the
+# Python modules, so you can tune the system during testing without touching
+# the code.
+#
+# Priority (lowest to highest):
+#     built-in defaults  <  this file  <  SAFEVISION_* env vars  <  --set a.b=c
+#
+# IMPORTANT - these values are a *starting point* calibrated on the synthetic
+# scenario suite (scripts/validate_thresholds.py).  They are NOT scientifically
+# optimal.  Re-tune them on your own footage with scripts/calibrate.py and
+# document what you changed.  See docs/scoring_and_tuning.md.
+# =============================================================================
+
+name: safevision-default
+version: 1.0.0
+
+# ------------------------------------------------------------------ #
+# 1. YOLO object detection
+# ------------------------------------------------------------------ #
+model:
+  # yolo11n is the smallest, fastest COCO checkpoint - good for a laptop.
+  # Swap in yolo11s.pt / yolov8n.pt for better accuracy if you can afford it.
+  # This path is resolved offline-first: if the file is missing, the bare
+  # checkpoint name is tried and downloaded automatically.
+  weights: models/yolo11n.pt
+  imgsz: 640            # inference size (multiples of 32)
+  conf: 0.30            # detection confidence threshold
+  iou: 0.50             # NMS IoU threshold
+  device: auto          # auto | cpu | 0 | 0,1 | mps
+  half: false           # fp16 - only useful on a CUDA GPU
+  max_det: 100
+  classes: null         # null -> use the road-scene filter (car, truck, bus,
+                         # motorcycle, bicycle, person)
+  class_names: null     # optional {name: id} override for custom checkpoints
+  verbose: false
+  warmup: true          # one throwaway inference at start-up
+  torch_threads: null   # null -> leave the torch default alone
+
+# ------------------------------------------------------------------ #
+# 2. Video input (file / webcam / RTSP)
+# ------------------------------------------------------------------ #
+video:
+  source: "0"                # 0 = webcam, "clip.mp4" = file, "rtsp://..." = CCTV
+  process_fps: null           # cap the analysis rate; null = follow the source
+  frame_stride: 1             # process every Nth decoded frame
+  target_width: 640           # downscale before inference (null = keep native)
+  keep_aspect: true
+  buffer_size: 8
+  rtsp_transport: 1           # 1 = TCP (reliable), 0 = UDP (lower latency)
+  open_timeout_seconds: 10.0
+  read_retries: 3
+  max_reconnect_attempts: 2   # reopen a dropped live stream this many times
+  reconnect_delay_seconds: 2.0
+  reopen_on_zero_frames: 30   # consecutive empty reads before reopening
+  report_every: 0             # >0 logs a status line every N frames
+
+# ------------------------------------------------------------------ #
+# 3. Tracking (ByteTrack)
+# ------------------------------------------------------------------ #
+tracking:
+  backend: safevision     # safevision (own two-stage ByteTrack) | ultralytics
+  ultralytics_tracker: bytetrack.yaml   # only used by the ultralytics backend
+  match_threshold: 0.55       # IoU gate, high-confidence stage
+  match_threshold_low: 0.25   # IoU gate, low-confidence stage
+  conf_high: 0.55             # split point between the two stages
+  conf_low: 0.15              # below this a detection never starts a track
+  min_hits: 2                 # frames before a track is reported
+  max_age: 30                 # frames a track survives without a detection
+  history_seconds: 3.0        # motion history retained per track
+  max_history: 300
+  ema_alpha: 0.60             # velocity smoothing (higher = more responsive)
+  min_box_area: 120.0         # px^2 - drops specks and shadows
+  use_kalman: true            # predict the box during association
+  score_weighted_iou: true    # rank matches by IoU * detection confidence
+  class_gate: true            # a person can never take a vehicle's track id
+  use_recovery_association: true   # distance stage for abruptly stopped tracks
+  recovery_distance: 0.9      # gate in object diagonals
+
+# ------------------------------------------------------------------ #
+# 4. Motion analysis
+# ------------------------------------------------------------------ #
+motion:
+  min_history: 4
+  ema_alpha: 0.40
+  window_seconds: 1.0
+  turn_window_seconds: 0.7
+  baseline_seconds: 1.2       # how far back the "was it moving?" speed is measured
+  baseline_lag_seconds: 0.2
+  stop_window_frames: 5       # frames inspected for a sudden stop
+  stop_entry_speed: 0.045     # frame-diagonals/s - counts as "moving"
+  stop_exit_speed: 0.012      # frame-diagonals/s - counts as "stopped"
+  turn_threshold_deg: 55.0
+  min_turn_speed: 0.030
+  accel_scale: 0.35           # normaliser for |dv/dt|
+  jitter_scale: 0.020
+  weights:
+    sudden_stop: 0.45
+    sudden_turn: 0.20
+    acceleration: 0.25
+    jitter: 0.10
+  aggregate: max              # max | mean over the vehicle tracks
+  person_fallback_scale: 0.6 # only used when the scene contains no vehicles
+  # Global (camera) motion compensation - important for panning / PTZ cameras,
+  # where every object appears to move.  Only applied when most tracks agree.
+  camera_motion_min_speed: 0.04
+  camera_motion_tolerance: 0.35
+  camera_motion_agreement: 0.6
+  camera_motion_min_tracks: 3   # with fewer objects, agreement proves nothing
+
+# ------------------------------------------------------------------ #
+# 5. Trajectory analysis
+# ------------------------------------------------------------------ #
+trajectory:
+  window_seconds: 3.0
+  min_points: 4
+  stop_displacement: 0.035    # frame-diagonals over the window
+  straightness_threshold: 0.80
+  heading_threshold_deg: 45.0
+  lateral_threshold: 0.045
+  max_ttc_seconds: 1.2
+  crossing_min_speed: 0.020   # ignore crawling objects
+  crossing_max_speed: 1.20    # ignore fly-by close calls
+  crossing_weight: 0.30       # crossing ALONE is capped here - it is weak evidence
+  weights:
+    heading_deviation: 0.32
+    lateral_deviation: 0.28
+    sudden_stop: 0.25
+    zigzag: 0.15
+
+# ------------------------------------------------------------------ #
+# 6. Collision analysis  (multi-signal, agreement required)
+# ------------------------------------------------------------------ #
+collision:
+  proximity_radius: 1.30      # object diagonals at which "close" reaches zero
+  proximity_weight: 0.15      # context signal (see the README on why it is small)
+  iou_threshold: 0.10
+  iou_weight: 0.18
+  physical_weight: 0.75       # share of the score owned by physical signals
+  context_weight: 0.25        # share owned by proximity / overlap / convergence
+  min_closing_speed: 0.045    # frame-diagonals/s
+  closing_speed_scale: 0.55
+  decel_ratio: 0.45           # speed drop fraction that counts as deceleration
+  decel_scale: 0.45
+  post_stop_speed: 0.020
+  post_stop_seconds: 0.35
+  post_stop_memory_seconds: 8.0   # how long "post-impact" stays true
+  pre_event_offset_seconds: 0.5
+  displacement_spike_ratio: 1.2   # unexplained residual / predicted step
+  displacement_spike_scale: 0.9
+  time_to_impact_window: 0.8
+  min_signals: 2              # *** the false-alarm gate ***
+  max_pairs: 40
+  person_collisions: true
+  person_signal_bonus: 0.05
+  require_motion: true
+
+# ------------------------------------------------------------------ #
+# 7. Temporal fusion (multi-frame evidence)
+# ------------------------------------------------------------------ #
+temporal:
+  window_seconds: 6.0
+  min_consecutive_frames: 3
+  hold_tau_seconds: 1.2       # time constant of the evidence "hold"
+  recency_halflife_seconds: 1.2
+  weight_recent_mean: 0.40
+  weight_accumulator: 0.30
+  weight_peak: 0.20
+  weight_consistency: 0.10
+  persistence_bonus: 0.18
+  isolated_penalty: 0.45      # applied to a single-frame spike
+  min_window_fill: 0.25
+  possible_threshold: 0.30
+  warmup_frames: 3
+
+# ------------------------------------------------------------------ #
+# 8. Accident score (transparent weighted sum)
+# ------------------------------------------------------------------ #
+scoring:
+  weights:
+    collision: 0.34
+    motion: 0.16
+    trajectory: 0.08
+    temporal: 0.30
+    object_evidence: 0.07
+    scene_evidence: 0.05
+  object_evidence_per_vehicle: 0.45
+  object_evidence_person_bonus: 0.12
+  scene_stopped_weight: 0.35
+  scene_disruption_weight: 0.30
+  scene_occlusion_weight: 0.20
+  scene_duration_weight: 0.15
+  scene_duration_cap_seconds: 6.0
+  apply_negative_evidence: true
+  penalty_max: 0.85
+  penalties:
+    parked_vehicles: 0.35
+    stable_scene: 0.30
+    no_movement_change: 0.20
+    single_frame_event: 0.45
+    tracking_unstable: 0.30
+    low_detection_confidence: 0.25
+    insufficient_history: 0.20
+    occlusion_conflict: 0.15
+
+# ------------------------------------------------------------------ #
+# 9. Verification state machine + false-alarm prevention
+# ------------------------------------------------------------------ #
+verification:
+  suspicious_score: 0.30     # physical evidence that starts an investigation
+  verify_entry_score: 0.34    # physical evidence required to enter VERIFYING
+  confirm_score: 0.42         # peak physical evidence required to CONFIRM
+  temporal_confirm_score: 0.40  # fused evidence required to CONFIRM
+  release_score: 0.22         # below this the scene is considered quiet again
+  suspicious_frames: 2
+  verify_frames: 3
+  false_alarm_frames: 8
+  min_verification_seconds: 1.0
+  verify_timeout_seconds: 8.0
+  cooldown_seconds: 12.0
+  min_vehicles: 2
+  min_signals: 2
+  false_alarm_cooldown_seconds: 6.0
+  log_false_alarms: true
+
+# ------------------------------------------------------------------ #
+# 10. Severity (AI-estimated SCENE severity, not injury severity)
+# ------------------------------------------------------------------ #
+severity:
+  low_threshold: 0.25
+  medium_threshold: 0.50
+  high_threshold: 0.75
+  duration_weight_seconds: 8.0
+  min_impact_speed: 0.10      # frame-diagonals/s - collision intensity proxy
+  min_decel: 0.08
+  min_displacement: 0.02
+  blockage_displacement: 0.030
+  blockage_seconds: 1.5
+  max_vehicles_for_scale: 4
+  weights:
+    vehicles_involved: 0.20
+    impact_intensity: 0.26
+    deceleration: 0.16
+    displacement: 0.10
+    persons_present: 0.10
+    traffic_blockage: 0.10
+    abnormal_duration: 0.08
+  # Optional external detectors are NOT bundled.  If the team later supplies a
+  # fire/smoke classifier, point this at it; until then the signal is reported
+  # as "not available" and contributes nothing.
+  optional_signal_provider: null
+
+# ------------------------------------------------------------------ #
+# 11. Evidence capture
+# ------------------------------------------------------------------ #
+evidence:
+  enabled: true
+  root: evidence
+  save_raw_frames: true
+  save_annotated: true
+  save_clip: false            # short mp4 of the event (extra disk, off by default)
+  clip_seconds: 4.0
+  clip_fps: 12.0
+  pre_event_seconds: 2.0      # "before" frames kept in memory
+  post_event_seconds: 1.5
+  jpeg_quality: 92
+  hash_files: true            # SHA-256 of every captured file
+  max_evidence_dirs: 200      # oldest directories are pruned beyond this
+  write_meta: true
+
+# ------------------------------------------------------------------ #
+# 12. Camera-registered location
+# ------------------------------------------------------------------ #
+location:
+  cameras_file: cameras.yaml
+  default_camera_id: null     # used when no --camera-id is given
+  allow_unregistered: true    # report the incident without coordinates
+  # RTSP credentials are read from these environment variables - never store
+  # them here:
+  #   setx SAFEVISION_RTSP_USERNAME admin
+  #   setx SAFEVISION_RTSP_PASSWORD <secret>
+  env_username: SAFEVISION_RTSP_USERNAME
+  env_password: SAFEVISION_RTSP_PASSWORD
+
+# ------------------------------------------------------------------ #
+# 13. Visual debug overlay
+# ------------------------------------------------------------------ #
+visualization:
+  enabled: true
+  show_boxes: true
+  show_labels: true
+  show_trails: true
+  show_collision: true
+  show_hud: true
+  show_perf: true
+  trail_length: 60
+  font_scale: 0.5
+  line_thickness: 2
+  hud_alpha: 0.55
+  max_preview_width: 1280
+  state_banner: true
+
+# ------------------------------------------------------------------ #
+# 14. Presentation / demo mode
+# ------------------------------------------------------------------ #
+demo:
+  normal_source: test_videos/normal_traffic.mp4
+  accident_source: test_videos/accident.mp4
+  suspicious_source: test_videos/suspicious.mp4
+  camera_id: null
+  hold_seconds: 2.0
+  print_every: 25
+  write_report: true
+  report_file: demo_report.json
+  scenarios: {}              # label -> source overrides, e.g. {crash: "a.mp4"}
+
+# ------------------------------------------------------------------ #
+# 15. Demonstration emergency call  (DEMO MODE ONLY)
+# ------------------------------------------------------------------ #
+#  When emergency.demo_mode is true (config.yaml, or DEMO_MODE=true in
+#  .env - the environment wins), SafeVision automatically places ONE
+#  demonstration call for each CONFIRMED incident. There is no button and
+#  no per-frame trigger; the false-alarm-prevention pipeline has to reach
+#  CONFIRMED_ACCIDENT first.
+#
+#  The recipient number is NOT configured here. It lives in `.env` as
+#  EMERGENCY_CONTACT_NUMBER and is read at runtime, so a phone number can
+#  never be committed to this file. Copy .env.example -> .env to set it.
+#
+#  provider: auto   -> Twilio when its credentials are in `.env`,
+#                      otherwise the simulation provider (no network call).
+#              none -> remove the feature entirely.
+#
+#  SAFETY: this is a demonstration aid. It is not connected to any
+#  ambulance, police or 112 line, and no emergency service is notified.
+emergency:
+  enabled: true                  # false removes the feature (recipient never read)
+  demo_mode: false               # master switch; DEMO_MODE=true in .env turns this on
+  provider: auto                 # auto | twilio | simulation | none
+  contact_env_var: EMERGENCY_CONTACT_NUMBER
+
+  # bookkeeping - the audit trail for the dashboard
+  write_call_log: true
+  call_log: demo_calls.jsonl
+  async_calls: true              # dial on a worker thread; never stall the video loop
+  # true  -> the incident JSON also carries `recipient_full`, so the dashboard
+  #          can show the number on stage. Everything else stays masked.
+  # false -> the number never leaves the environment; the payload shows the
+  #          masked form only. Use this if you share incidents.json or
+  #          demo_report.json with anyone.
+  # Either way these files are git-ignored, so the number is never committed.
+  expose_recipient: true
+  max_calls_per_run: 0           # 0 = one call per confirmed incident (dedup by incident_id)
+  min_gap_seconds: 0.0           # optional minimum time between two calls
+
+  # what the recipient hears
+  voice_message: "SafeVision demonstration alert. This is a demonstration call for a project presentation, not an emergency notification."
+
+  # --- SMS: sent AFTER the call, for the SAME incident -------------------
+  # The body is built from the confirmed incident (id, date, time, registered
+  # location, camera id, severity) - never hard-coded. sms_body may override
+  # the whole text; empty means "use the standard alert body".
+  send_sms: true
+  sms_provider: auto             # auto | twilio | simulation | none
+  sms_body: ""                   # "" = build the standard alert from the incident
+  sms_max_body_length: 1500
+  emergency_instruction: "A traffic accident has been confirmed by SafeVision from multi-frame video evidence. Emergency assistance may be required."
+
+  # provider transport
+  request_timeout_seconds: 10.0
+  poll_attempts: 15
+  poll_interval_seconds: 4.0
+  simulated_ring_after_seconds: 2.0   # simulation provider only
+  simulated_duration_seconds: 4.0     # simulation provider only
+
+  # --- Phase 4: fallback policy -----------------------------------------
+  # What happens when the call does not reach the recipient.  Default false
+  # keeps the original behaviour: one SMS only after a call that reached the
+  # network.  Turning this on sends a fallback SMS on BUSY / NO_ANSWER /
+  # FAILED / a rejected call request.  It is an operator decision, not an
+  # automatic safety net.
+  sms_on_call_failure: false
+  sms_on_call_success: true          # also send the primary SMS after a good call
+  both_channels_failed_policy: flag  # none | flag | escalate
+  #   `escalate` RECORDS the failure and stops.  It does not contact police,
+  #   ambulance or 112 - that routing is NOT_APPROVED and not implemented.
+
+  # --- Phase 4: durable, exactly-once delivery --------------------------
+  # A SQLite outbox with UNIQUE(incident_id, channel).  Exactly-once is a
+  # property of the schema, not of a code path remembering to check, so it
+  # survives a restart and two workers on one camera.
+  use_outbox: true
+  outbox_path: notification_outbox.sqlite3
+  outbox_lease_seconds: 120.0        # a worker's lease; a crash self-heals
+
+  # --- Phase 4: retry + circuit breaker ----------------------------------
+  # Only transient failures are retried (HTTP 408/425/429/5xx, and a
+  # connection that failed before any resource id was returned).  Permanent
+  # errors - bad credentials, invalid number, 4xx - are never retried.
+  retry_max_attempts: 3
+  retry_base_delay_seconds: 2.0
+  retry_max_delay_seconds: 30.0
+  breaker_failure_threshold: 5      # consecutive failures before refusing
+  breaker_reset_timeout_seconds: 60.0
+
+  # --- Phase 4: provider callbacks --------------------------------------
+  # Opt-in.  No HTTP server starts unless this is true.  Callbacks are only
+  # applied when X-Twilio-Signature verifies and the request is fresh.
+  webhook_enabled: false
+  webhook_path: /webhooks/twilio
+  webhook_tolerance_seconds: 300.0   # replay window
+  webhook_require_https: true
+
+  # --- Phase 4: kill switches -------------------------------------------
+  # Set both to false and NOTHING can leave this machine, whatever else is
+  # configured.  They are true here so that the intended workflow works:
+  #   DEMO_MODE=true  -> simulated call + SMS, no network
+  #   DEMO_MODE=false -> a REAL Twilio call then a REAL SMS, but only if the
+  #                      TWILIO_* credentials below are present. With no
+  #                      credentials the engine reports NOT_CONFIGURED and
+  #                      still sends nothing - the credentials, not these
+  #                      flags, are the real safety gate.
+  allow_real_call: true
+  allow_real_sms: true
+  # How long to wait for an in-flight call/SMS to reach a terminal state before
+  # exiting. A real call rings for ~30s before a provider reports no-answer, so
+  # this is deliberately much longer than request_timeout_seconds (the HTTP
+  # read timeout). Raise it if your provider needs longer.
+  notification_wait_seconds: 75.0
+  # NOT_APPROVED.  Setting this true is refused by config validation - there is
+  # no public-emergency routing here, no jurisdiction and no authorisation.
+  allow_emergency_service_routing: false
+
+  # Twilio credentials are read from these environment variables (never here)
+  twilio_sid_env_var: TWILIO_ACCOUNT_SID
+  twilio_token_env_var: TWILIO_AUTH_TOKEN
+  twilio_from_env_var: TWILIO_FROM_NUMBER
+  twilio_phone_env_var: TWILIO_PHONE_NUMBER   # SMS sender
+
+  # Twilio Messaging Template SID (value goes in .env, never here).
+  # REQUIRED on a trial account: Twilio rejects free-form SMS with
+  #   572006 "Trial accounts can only use predefined SMS templates."
+  # Leave empty on a paid account to send the incident body as free-form text.
+  twilio_content_sid_env_var: TWILIO_CONTENT_SID
+  twilio_content_variables_env_var: TWILIO_CONTENT_VARIABLES
+
+# --- Phase 5: routing and dispatch -----------------------------------
+# Who gets told, decided from declared configuration - never hard-coded.
+# See docs/deployment.md for the runbook and the rollback procedure.
+routing:
+  dispatch_enabled: true         # master kill switch: false stops ALL sending
+  mode: simulation               # simulation | live
+  directory: dispatch/recipients.json
+  required_role: safety-officer
+  required_jurisdiction: IN-TN
+  require_location: false        # true = refuse when no position is available
+  # Public-emergency routing is NOT_APPROVED and not implemented. An
+  # emergency-service contact in the directory is logged and excluded on every
+  # routing decision; an incident asking for one is refused outright.
+  allow_emergency_service: false
+
+# ------------------------------------------------------------------ #
+# 16. Runtime
+# ------------------------------------------------------------------ #
+runtime:
+  seed: 42
+  log_level: INFO
+  log_file: null
+  max_frames: 0               # 0 = process the whole file
+  save_output_video: false
+  output_video: output_debug.mp4
+  output_video_fps: null
+  incidents_file: incidents.json
+  write_incidents_file: true
+  print_incident_json: false
+  stop_on_incident: false

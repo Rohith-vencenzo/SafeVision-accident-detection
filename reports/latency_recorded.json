@@ -1,0 +1,87 @@
+{
+  "mode": "UNKNOWN",
+  "source_kind": "UNKNOWN",
+  "frames_processed": 505,
+  "stages": {
+    "detect": {
+      "count": 505,
+      "p50_ms": 136.162,
+      "p95_ms": 214.818,
+      "max_ms": 5185.23,
+      "mean_ms": 150.404,
+      "min_ms": 89.983
+    },
+    "track": {
+      "count": 505,
+      "p50_ms": 1.01,
+      "p95_ms": 2.192,
+      "max_ms": 1417.066,
+      "mean_ms": 3.988,
+      "min_ms": 0.374
+    },
+    "analysis": {
+      "count": 505,
+      "p50_ms": 4.212,
+      "p95_ms": 12.862,
+      "max_ms": 54.652,
+      "mean_ms": 5.358,
+      "min_ms": 0.121
+    },
+    "verify": {
+      "count": 505,
+      "p50_ms": 0.04,
+      "p95_ms": 0.076,
+      "max_ms": 0.86,
+      "mean_ms": 0.049,
+      "min_ms": 0.028
+    },
+    "incident_build": {
+      "count": 505,
+      "p50_ms": 0.002,
+      "p95_ms": 0.005,
+      "max_ms": 14.578,
+      "mean_ms": 0.032,
+      "min_ms": 0.002
+    }
+  },
+  "incident_timelines": {
+    "INC-20261002-0031": {
+      "incident_created": 0.0
+    }
+  },
+  "methodology": {
+    "clock": "time.perf_counter() (monotonic)",
+    "start": "first instruction of the stage",
+    "end": "return from the stage",
+    "percentiles": "nearest-rank; p95 is a real observed sample, not interpolated",
+    "event_time": "source timestamp, kept separate from elapsed time",
+    "caveat": "These are pipeline stage durations on THIS machine. They do not bound the provider's or the network's contribution to a call being answered or an SMS being read."
+  },
+  "throughput": {
+    "frames": 505,
+    "wall_seconds": 81.696,
+    "analysed_fps": 6.18,
+    "source_fps": 30.0,
+    "footage_seconds": 16.83,
+    "slower_than_realtime_by": 4.85,
+    "processing_mode": "RECORDED"
+  },
+  "hardware": {
+    "cpu": "Intel64 Family 6 Model 190 Stepping 0, GenuineIntel",
+    "cores": 8,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.14"
+  },
+  "incidents": [
+    "INC-20261002-0031"
+  ],
+  "video_config": {
+    "weights": "models/yolo11n.pt",
+    "imgsz": 640,
+    "device": "auto",
+    "frame_stride": 1,
+    "target_width": 640,
+    "process_fps": null
+  },
+  "interpretation": "RECORDED file analysed at 4.85x slower than real time. This is OFFLINE THROUGHPUT, not a live response time, and must never be quoted as one."
+}

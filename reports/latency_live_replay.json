@@ -1,0 +1,78 @@
+{
+  "mode": "LIVE",
+  "source_kind": "LIVE",
+  "frames_processed": 250,
+  "stages": {
+    "detect": {
+      "count": 250,
+      "p50_ms": 108.492,
+      "p95_ms": 156.989,
+      "max_ms": 7719.57,
+      "mean_ms": 144.601,
+      "min_ms": 99.17
+    },
+    "track": {
+      "count": 250,
+      "p50_ms": 1.015,
+      "p95_ms": 1.397,
+      "max_ms": 1965.248,
+      "mean_ms": 8.852,
+      "min_ms": 0.426
+    },
+    "analysis": {
+      "count": 250,
+      "p50_ms": 3.551,
+      "p95_ms": 5.534,
+      "max_ms": 6.858,
+      "mean_ms": 3.489,
+      "min_ms": 0.049
+    },
+    "verify": {
+      "count": 250,
+      "p50_ms": 0.048,
+      "p95_ms": 0.07,
+      "max_ms": 0.61,
+      "mean_ms": 0.049,
+      "min_ms": 0.027
+    },
+    "incident_build": {
+      "count": 250,
+      "p50_ms": 0.003,
+      "p95_ms": 0.005,
+      "max_ms": 17.574,
+      "mean_ms": 0.074,
+      "min_ms": 0.001
+    }
+  },
+  "incident_timelines": {
+    "INC-20261003-0001": {
+      "incident_created": 0.0
+    }
+  },
+  "methodology": {
+    "clock": "time.perf_counter() (monotonic)",
+    "start": "first instruction of the stage",
+    "end": "return from the stage",
+    "percentiles": "nearest-rank; p95 is a real observed sample, not interpolated",
+    "event_time": "source timestamp, kept separate from elapsed time",
+    "caveat": "These are pipeline stage durations on THIS machine. They do not bound the provider's or the network's contribution to a call being answered or an SMS being read."
+  },
+  "live": {
+    "mode": "LIVE_REPLAY_PACED",
+    "target_fps": 30.0,
+    "achieved_fps": 6.3,
+    "keeps_up": false,
+    "frames": 250,
+    "wall_seconds": 39.707,
+    "stream_stats": {
+      "target_fps": 30.0,
+      "emitted": 250,
+      "dropped_behind_budget": 0
+    },
+    "incidents": [
+      "INC-20261003-0001"
+    ],
+    "incident_count": 1,
+    "honesty": "SIMULATED LIVE PACING over a recorded clip. No capture, no network, no encoder, no source clock. This measures how fast the ENGINE can process 640x360 frames on CPU under a fixed arrival rate. It is NOT a live response time and must not be quoted as one."
+  }
+}

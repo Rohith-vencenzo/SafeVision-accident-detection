@@ -1,0 +1,60 @@
+{
+  "name": "safevision-shipped-assets",
+  "version": "0.1.0",
+  "description": "The clips that ship with the repository. This is a PROBE set, not an evaluation set: it exists to prove the harness runs end to end and to document exactly why no accuracy figure can be quoted. Every clip here is either synthetic or a single provisional event.",
+  "clips": [
+    {
+      "clip": "../test_videos/accident_demo.mp4",
+      "label": "accident",
+      "source_id": "SRC-A-2026-09",
+      "camera_id": "UNKNOWN-UNVERIFIED",
+      "location_id": "UNKNOWN",
+      "recorded_at": "",
+      "quality": "PROVISIONAL",
+      "note": "Real footage, 505 frames @30fps. The single accident event was located by watching the pipeline's own state transitions, NOT by independent review - so using it to score the pipeline is circular. Counts as evidence that the system runs, not as ground truth.",
+      "events": [
+        {
+          "kind": "accident",
+          "start_seconds": 1.9,
+          "end_seconds": 5.2,
+          "subtype": "unclassified_collision",
+          "note": "Window bracketing the SUSPICIOUS->VERIFYING->CONFIRMED transitions observed at ~frame 57-155. NOT independently verified.",
+          "verified_by": ""
+        }
+      ]
+    },
+    {
+      "clip": "../test_videos/accident.mp4",
+      "label": "normal",
+      "source_id": "SRC-SYNTH-A",
+      "camera_id": "",
+      "location_id": "",
+      "recorded_at": "",
+      "quality": "SYNTHETIC",
+      "note": "Generated drawing, 90 frames. YOLO finds no real objects in it. Cannot measure detector quality in either direction.",
+      "events": []
+    },
+    {
+      "clip": "../test_videos/normal_traffic.mp4",
+      "label": "normal",
+      "source_id": "SRC-SYNTH-B",
+      "camera_id": "",
+      "location_id": "",
+      "recorded_at": "",
+      "quality": "SYNTHETIC",
+      "note": "Generated drawing, 90 frames. No real objects; a negative here is guaranteed by construction and proves nothing about false alarms.",
+      "events": []
+    },
+    {
+      "clip": "../test_videos/suspicious.mp4",
+      "label": "normal",
+      "source_id": "SRC-SYNTH-C",
+      "camera_id": "",
+      "location_id": "",
+      "recorded_at": "",
+      "quality": "SYNTHETIC",
+      "note": "Generated drawing, 90 frames. Intended as a false-alarm trap; with no detectable objects it is a vacuous negative.",
+      "events": []
+    }
+  ]
+}

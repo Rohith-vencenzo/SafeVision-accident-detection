@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "description": "Vetted recipients for SafeVision notifications. A phone number is NEVER stored here - only the NAME of the environment variable that holds it, so this file is safe to commit. Emergency-service contacts are listed only to demonstrate that SafeVision REFUSES to route to them.",
+  "recipients": [
+    {
+      "recipient_id": "SAFETY-LEAD-01",
+      "kind": "DESIGNATED_CONTACT",
+      "roles": ["safety-officer", "reviewer"],
+      "jurisdictions": ["IN-TN", "IN-KA"],
+      "number_env_var": "EMERGENCY_CONTACT_NUMBER",
+      "consented_by": "operator",
+      "consented_at": "2026-10-03",
+      "enabled": true
+    },
+    {
+      "recipient_id": "FIREDUKE-EXAMPLE",
+      "kind": "EMERGENCY_SERVICE",
+      "roles": ["emergency-service"],
+      "jurisdictions": [],
+      "number_env_var": "",
+      "consented_by": "",
+      "consented_at": "",
+      "enabled": false
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+# =============================================================================
+# SafeVision - registered camera locations
+# =============================================================================
+# A fixed CCTV camera cannot report where it is: that information is installed
+# WITH the camera.  SafeVision therefore looks the camera up here and attaches
+# whatever was configured - it never invents coordinates.
+#
+# When the incident is confirmed, the engine copies the matching entry into the
+# incident JSON.  If no entry matches, the incident is still reported, with
+# location.is_camera_registered = false and a warning.
+#
+# Your teammate (the 40%) can also push these rows into the engine at runtime
+# from his own database:
+#
+#     from ai_engine.location import LocationManager, CameraLocation
+#     pipeline.locations.register(CameraLocation(
+#         camera_id="CAM-002", name="Highway Camera",
+#         latitude=13.0, longitude=80.0, location_name="GST Road"))
+#
+# Coordinates are optional but must be supplied as a *pair*; a camera with no
+# coordinates is valid and simply reports no location.
+# =============================================================================
+
+default_camera_id: CAM-001
+
+cameras:
+  CAM-001:
+    name: Main Road Camera
+    latitude: 13.0827
+    longitude: 80.2707
+    location_name: Chennai Main Road
+    road: Anna Salai
+    address: 112, Anna Salai, Chennai, Tamil Nadu
+    zone: TN-01
+    source: camera_metadata
+
+  CAM-002:
+    name: Highway Junction Camera
+    latitude: 13.0337
+    longitude: 80.2090
+    location_name: GST Road Junction
+    road: GST Road
+    address: GST Road, Kilpauk, Chennai, Tamil Nadu
+    zone: TN-01
+    source: camera_metadata
+
+  CAM-003:
+    # A camera we know exists but have not surveyed yet: valid on purpose, it
+    # shows how the engine behaves without coordinates.
+    name: Unsurveyed Campus Camera
+    location_name: College Campus - Main Gate
+    source: camera_metadata
+
+  DEMO-LAPTOP:
+    # Used by --demo and the laptop-webcam walkthrough.
+    name: Laptop Webcam
+    location_name: Demo Bench (no GPS registered)
+    source: camera_metadata

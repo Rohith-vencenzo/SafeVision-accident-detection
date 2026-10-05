@@ -1,0 +1,29 @@
+# SafeVision - AI / Computer-Vision accident detection subsystem
+# Target: Python 3.10 - 3.13, CPU-first (GPU optional).
+#
+# Install:
+#   python -m venv .venv
+#   .venv\Scripts\activate            (Windows)
+#   pip install -r requirements.txt
+#
+# NOTE ON PyTorch:
+#   `ultralytics` pulls in a CPU build of torch by default, which is what we want
+#   for a normal laptop. For an NVIDIA GPU, install the CUDA wheel FIRST and then
+#   this file, e.g.:
+#     pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+#     pip install -r requirements.txt
+#   See README -> "GPU (optional)".
+
+# --- core numerics / vision ---
+numpy>=1.24,<3
+opencv-python>=4.8,<5          # video I/O, RTSP, drawing, video writing
+scipy>=1.10                    # linear_sum_assignment (Hungarian) for track association
+
+# --- detection ---
+ultralytics>=8.3,<9            # YOLO11 pretrained detector (downloads weights on first use)
+
+# --- configuration ---
+PyYAML>=6.0                    # config.yaml / cameras.yaml
+
+# --- optional, only used by scripts/ (not needed to run the engine) ---
+# pytest>=8.0                    # tests are written with stdlib unittest, pytest also works
